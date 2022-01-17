@@ -1,71 +1,114 @@
-import React from "react";
-import {
-  Text,
-  Link,
-  HStack,
-  Center,
-  Heading,
-  Switch,
-  useColorMode,
-  NativeBaseProvider,
-  extendTheme,
-  VStack,
-  Code,
-} from "native-base";
-import NativeBaseIcon from "./components/NativeBaseIcon";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { ButtonText, ButtonDelete } from "./src/components/button";
+import RowButton from "./src/components/row";
 
-// Define the config
-const config = {
-  useSystemColorMode: false,
-  initialColorMode: "dark",
+const { width, height } = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  container: {
+    width: width,
+    height: height,
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    backgroundColor: "#cde3f3",
+  },
+  displayArea: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    // backgroundColor: "red"
+  },
+  buttonsArea: {
+    flex: 2,
+    display: "flex",
+  },
+  result: {
+    color: "#32688c",
+    textAlign: "right",
+    fontSize: width * 0.11,
+    maxWidth: width,
+  },
+});
+
+const App = () => {
+  const [display, setDisplay] = useState("0");
+
+  const onSubmit = (number) => {
+    let currentValue = display;
+    let nextValue = (currentValue += number);
+    let result = nextValue.replace(/^0+/, "");
+    if (result === "") {
+      setDisplay("0");
+    } else {
+      setDisplay(result);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.displayArea}>
+        <Text style={styles.result}>{display}</Text>
+      </View>
+      <View style={styles.buttonsArea}>
+        <RowButton>
+          <ButtonText
+            text="AC"
+            sizeX={width * 0.44}
+            onPress={() => setDisplay("0")}
+          />
+          <ButtonDelete
+            onPress={() => {
+              let operation = display;
+              setDisplay(operation.slice(0, -1));
+            }}
+          />
+          <ButtonText text="/" color="#f0a632" onPress={() => onSubmit("/")} />
+        </RowButton>
+        <RowButton>
+          <ButtonText text="7" color="#47a3f3" onPress={() => onSubmit("7")} />
+          <ButtonText text="8" color="#47a3f3" onPress={() => onSubmit("8")} />
+          <ButtonText text="9" color="#47a3f3" onPress={() => onSubmit("9")} />
+          <ButtonText text="x" color="#f0a632" onPress={() => onSubmit("*")} />
+        </RowButton>
+        <RowButton>
+          <ButtonText text="4" color="#47a3f3" onPress={() => onSubmit("4")} />
+          <ButtonText text="5" color="#47a3f3" onPress={() => onSubmit("5")} />
+          <ButtonText text="6" color="#47a3f3" onPress={() => onSubmit("6")} />
+          <ButtonText text="-" color="#f0a632" onPress={() => onSubmit("-")} />
+        </RowButton>
+        <RowButton>
+          <ButtonText text="1" color="#47a3f3" onPress={() => onSubmit("1")} />
+          <ButtonText text="2" color="#47a3f3" onPress={() => onSubmit("2")} />
+          <ButtonText text="3" color="#47a3f3" onPress={() => onSubmit("3")} />
+          <ButtonText text="+" color="#f0a632" onPress={() => onSubmit("+")} />
+        </RowButton>
+        <RowButton>
+          <ButtonText text="0" color="#47a3f3" onPress={() => onSubmit("0")} />
+          <ButtonText
+            text="00"
+            color="#47a3f3"
+            onPress={() => onSubmit("00")}
+          />
+          <ButtonText text="." color="#47a3f3" onPress={() => onSubmit(".")} />
+          <ButtonText
+            text="="
+            color="#27cf55"
+            onPress={() => {
+              try {
+                let operation = display;
+                setDisplay(eval(operation));
+              } catch (error) {
+                setDisplay("Error");
+              }
+            }}
+          />
+        </RowButton>
+      </View>
+    </View>
+  );
 };
 
-// extend the theme
-export const theme = extendTheme({ config });
-
-export default function App() {
-  return (
-    <NativeBaseProvider>
-      <Center
-        _dark={{ bg: "blueGray.900" }}
-        _light={{ bg: "blueGray.50" }}
-        px={4}
-        flex={1}
-      >
-        <VStack space={5} alignItems="center">
-          <NativeBaseIcon />
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Code>App.js</Code>
-            <Text>and save to reload.</Text>
-          </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-        </VStack>
-      </Center>
-    </NativeBaseProvider>
-  );
-}
-
-// Color Switch Component
-function ToggleDarkMode() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <HStack space={2} alignItems="center">
-      <Text>Dark</Text>
-      <Switch
-        isChecked={colorMode === "light" ? true : false}
-        onToggle={toggleColorMode}
-        aria-label={
-          colorMode === "light" ? "switch to dark mode" : "switch to light mode"
-        }
-      />
-      <Text>Light</Text>
-    </HStack>
-  );
-}
+export default App;
